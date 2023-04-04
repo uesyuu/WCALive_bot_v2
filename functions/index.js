@@ -1,16 +1,19 @@
+require('dotenv').config();
+
 const functions = require("firebase-functions");
 
 const admin = require("firebase-admin")
 admin.initializeApp()
 
 const fetch = require("node-fetch")
-const Twitter = require("twitter")
-const client = new Twitter({
-    consumer_key: process.env.CONSUMER_KEY,
-    consumer_secret: process.env.CONSUMER_SECRET,
-    access_token_key: process.env.ACCESS_TOKEN_KEY,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET
-})
+
+const { TwitterApi } = require("twitter-api-v2")
+const client = new TwitterApi({
+    appKey: process.env.CONSUMER_KEY,
+    appSecret: process.env.CONSUMER_SECRET,
+    accessToken: process.env.ACCESS_TOKEN_KEY,
+    accessSecret: process.env.ACCESS_TOKEN_SECRET,
+});
 
 const url = "https://live.worldcubeassociation.org/api"
 const req_data = {
@@ -36,13 +39,7 @@ exports.scheduledFunction = functions.pubsub.schedule("0,20,40 * * * *")
 // })
 
 function tweetContent(content) {
-    client.post("statuses/update", {status: content}, function (error, tweet, response) {
-        if (!error) {
-            console.log("tweet success: " + content);
-        } else {
-            console.log(error);
-        }
-    })
+    client.v2.tweet(content)
 }
 
 function tweetRecentResults() {
