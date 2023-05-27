@@ -39,7 +39,11 @@ exports.scheduledFunction = functions.pubsub.schedule("0,20,40 * * * *")
 // })
 
 function tweetContent(content) {
-    client.v2.tweet(content)
+    try {
+        client.v2.tweet(content)
+    } catch (e) {
+        console.log("tweet error", e)
+    }
 }
 
 function tweetRecentResults() {
