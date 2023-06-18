@@ -38,13 +38,16 @@ exports.scheduledFunction = functions.pubsub.schedule("0,20,40 * * * *")
 //     res.json({result: `Message added.`})
 // })
 
-function tweetContent(content) {
-    try {
-        client.v2.tweet(content)
-    } catch (e) {
-        console.log("tweet error", e)
-    }
-}
+// function tweetContent(content) {
+//     client.v2.tweet(content)
+//         .then(result => {
+//             if (result.errors == null) {
+//                 console.log("tweet success")
+//             } else {
+//                 console.log("tweet error", result.errors)
+//             }
+//         })
+// }
 
 function tweetRecentResults() {
     // WCA LiveのGraphQL APIでRecent RecordsをJSON形式で取得
@@ -102,23 +105,33 @@ function tweetRecentResults() {
                         const tweetSentence = `${person} (from ${country}) just got the ${event} ${recordType} ${recordTag} (${result}) at ${competition} https://live.worldcubeassociation.org${competitionUrl}`
 
                         // console.log(tweetSentence)
-                        tweetContent(tweetSentence)
-                    }
+                        // tweetContent(tweetSentence)
 
-                    // 差分があればfetchしたデータをFirestoreに上書き
-                    if (difference.length !== 0) {
-                        admin.firestore()
-                            .collection("messages")
-                            .doc("recentRecords")
-                            .update({
-                                data: JSON.stringify(data)
-                            }).then(() => {
-                            console.log("updated firestore")
-                        })
+                        client.v2.tweet(tweetSentence)
+                            .then(result => {
+                                if (result.errors == null) {
+                                    console.log("tweet success")
+
+                                    // 差分があればfetchしたデータをFirestoreに上書き
+                                    if (difference.length !== 0) {
+                                        admin.firestore()
+                                            .collection("messages")
+                                            .doc("recentRecords")
+                                            .update({
+                                                data: JSON.stringify(data)
+                                            }).then(() => {
+                                            console.log("updated firestore")
+                                        })
+                                    }
+                                } else {
+                                    console.log("tweet error", result.errors)
+                                }
+                            })
                     }
                 }
             })
     }).catch(error => {
+        console.log("firebase error", error)
     })
 }
 
