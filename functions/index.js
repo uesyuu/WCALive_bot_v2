@@ -110,23 +110,25 @@ function tweetRecentResults() {
                         client.v2.tweet(tweetSentence)
                             .then(result => {
                                 if (result.errors == null) {
-                                    console.log("tweet success")
-
-                                    // 差分があればfetchしたデータをFirestoreに上書き
-                                    if (difference.length !== 0) {
-                                        admin.firestore()
-                                            .collection("messages")
-                                            .doc("recentRecords")
-                                            .update({
-                                                data: JSON.stringify(data)
-                                            }).then(() => {
-                                            console.log("updated firestore")
-                                        })
-                                    }
+                                    console.log("following tweet is success")
+                                    console.log(tweetSentence)
                                 } else {
-                                    console.log("tweet error", result.errors)
+                                    console.log("following tweet is error", result.errors)
+                                    console.log(tweetSentence)
                                 }
                             })
+                    }
+
+                    // 差分があればfetchしたデータをFirestoreに上書き
+                    if (difference.length !== 0) {
+                        admin.firestore()
+                            .collection("messages")
+                            .doc("recentRecords")
+                            .update({
+                                data: JSON.stringify(data)
+                            }).then(() => {
+                            console.log("updated firestore")
+                        })
                     }
                 }
             })
