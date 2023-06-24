@@ -104,14 +104,14 @@ function tweetRecentResults() {
 
                         const tweetSentence = `${person} (from ${country}) just got the ${event} ${recordType} ${recordTag} (${result}) at ${competition} https://live.worldcubeassociation.org${competitionUrl}`
 
-                        // console.log(tweetSentence)
+                        console.log(`tweet is ${tweetSentence}`)
                         // tweetContent(tweetSentence)
 
                         client.v2.tweet(tweetSentence)
                             .then(result => {
                                 if (result.errors == null) {
-                                    console.log("following tweet is success")
-                                    console.log(tweetSentence)
+                                    console.log("above tweet is success")
+                                    // console.log(tweetSentence)
                                 } else {
                                     console.log("following tweet is error", result.errors)
                                     console.log(tweetSentence)
@@ -129,6 +129,8 @@ function tweetRecentResults() {
                             }).then(() => {
                             console.log("updated firestore")
                         })
+                    } else {
+                        console.log("there is no difference")
                     }
                 }
             })
